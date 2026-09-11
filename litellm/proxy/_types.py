@@ -715,6 +715,7 @@ class LiteLLMRoutes(enum.Enum):
         "/management/v1/spend_logs/end_users",
         "/management/v1/spend_logs/users",
         "/cost/estimate",
+        "/cost/estimate/cache-switch",
     ]
 
     global_spend_tracking_routes = [
@@ -5238,6 +5239,45 @@ class CostEstimateRequest(LiteLLMPydanticObjectBase):
         if self.reasoning_tokens > self.output_tokens:
             raise ValueError("reasoning_tokens cannot exceed output_tokens")
         return self
+
+
+class CacheSwitchCostEstimateArmRequest(LiteLLMPydanticObjectBase):
+    model: str = Field(description="Provider-qualified model or configured model group")
+    model_id: str | None = Field(default=None, description="Required when model resolves to multiple deployments")
+    uncached_input_tokens: int = Field(description="Input tokens billed at the normal input rate", ge=0)
+    cache_read_input_tokens: int = Field(description="Input tokens assumed to hit the prompt cache", ge=0)
+    cache_creation_input_tokens_5m: int = Field(description="Input tokens assumed to write a 5-minute cache", ge=0)
+    cache_creation_input_tokens_1h: int = Field(description="Input tokens assumed to write a 1-hour cache", ge=0)
+    assumed_cache_state: Literal["warm", "cold", "stale", "unknown"] | None = Field(
+        default=None, description="Descriptive assumption only; token buckets determine the estimate"
+    )
+
+
+class CacheSwitchCostEstimateRequest(LiteLLMPydanticObjectBase):
+    stay: CacheSwitchCostEstimateArmRequest
+    switch: CacheSwitchCostEstimateArmRequest
+
+
+class CacheSwitchCostEstimateArmResponse(CacheSwitchCostEstimateArmRequest):
+    resolved_model: str
+    resolved_model_id: str | None
+    provider: str | None
+    input_tokens: int
+    input_cost: float = Field(description="Estimated input cost in USD")
+    uncached_input_cost: float
+    cache_read_input_cost: float
+    cache_creation_input_cost_5m: float
+    cache_creation_input_cost_1h: float
+    input_cost_per_token: float
+    cache_read_input_token_cost: float
+    cache_creation_input_token_cost_5m: float
+    cache_creation_input_token_cost_1h: float
+
+
+class CacheSwitchCostEstimateResponse(LiteLLMPydanticObjectBase):
+    stay: CacheSwitchCostEstimateArmResponse
+    switch: CacheSwitchCostEstimateArmResponse
+    switch_cost_delta: float = Field(description="Switch input cost minus stay input cost in USD")
 
 
 class CostEstimateResponse(LiteLLMPydanticObjectBase):

@@ -3379,6 +3379,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/cost/estimate/cache-switch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Estimate Cache Switch Cost */
+        post: operations["estimate_cache_switch_cost_cost_estimate_cache_switch_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/credentials": {
         parameters: {
             query?: never;
@@ -24678,6 +24695,126 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /** CacheSwitchCostEstimateArmRequest */
+        CacheSwitchCostEstimateArmRequest: {
+            /**
+             * Assumed Cache State
+             * @description Descriptive assumption only; token buckets determine the estimate
+             */
+            assumed_cache_state?: ("warm" | "cold" | "stale" | "unknown") | null;
+            /**
+             * Cache Creation Input Tokens 1H
+             * @description Input tokens assumed to write a 1-hour cache
+             */
+            cache_creation_input_tokens_1h: number;
+            /**
+             * Cache Creation Input Tokens 5M
+             * @description Input tokens assumed to write a 5-minute cache
+             */
+            cache_creation_input_tokens_5m: number;
+            /**
+             * Cache Read Input Tokens
+             * @description Input tokens assumed to hit the prompt cache
+             */
+            cache_read_input_tokens: number;
+            /**
+             * Model
+             * @description Provider-qualified model or configured model group
+             */
+            model: string;
+            /**
+             * Model Id
+             * @description Required when model resolves to multiple deployments
+             */
+            model_id?: string | null;
+            /**
+             * Uncached Input Tokens
+             * @description Input tokens billed at the normal input rate
+             */
+            uncached_input_tokens: number;
+        };
+        /** CacheSwitchCostEstimateArmResponse */
+        CacheSwitchCostEstimateArmResponse: {
+            /**
+             * Assumed Cache State
+             * @description Descriptive assumption only; token buckets determine the estimate
+             */
+            assumed_cache_state?: ("warm" | "cold" | "stale" | "unknown") | null;
+            /** Cache Creation Input Cost 1H */
+            cache_creation_input_cost_1h: number;
+            /** Cache Creation Input Cost 5M */
+            cache_creation_input_cost_5m: number;
+            /** Cache Creation Input Token Cost 1H */
+            cache_creation_input_token_cost_1h: number;
+            /** Cache Creation Input Token Cost 5M */
+            cache_creation_input_token_cost_5m: number;
+            /**
+             * Cache Creation Input Tokens 1H
+             * @description Input tokens assumed to write a 1-hour cache
+             */
+            cache_creation_input_tokens_1h: number;
+            /**
+             * Cache Creation Input Tokens 5M
+             * @description Input tokens assumed to write a 5-minute cache
+             */
+            cache_creation_input_tokens_5m: number;
+            /** Cache Read Input Cost */
+            cache_read_input_cost: number;
+            /** Cache Read Input Token Cost */
+            cache_read_input_token_cost: number;
+            /**
+             * Cache Read Input Tokens
+             * @description Input tokens assumed to hit the prompt cache
+             */
+            cache_read_input_tokens: number;
+            /**
+             * Input Cost
+             * @description Estimated input cost in USD
+             */
+            input_cost: number;
+            /** Input Cost Per Token */
+            input_cost_per_token: number;
+            /** Input Tokens */
+            input_tokens: number;
+            /**
+             * Model
+             * @description Provider-qualified model or configured model group
+             */
+            model: string;
+            /**
+             * Model Id
+             * @description Required when model resolves to multiple deployments
+             */
+            model_id?: string | null;
+            /** Provider */
+            provider: string | null;
+            /** Resolved Model */
+            resolved_model: string;
+            /** Resolved Model Id */
+            resolved_model_id: string | null;
+            /** Uncached Input Cost */
+            uncached_input_cost: number;
+            /**
+             * Uncached Input Tokens
+             * @description Input tokens billed at the normal input rate
+             */
+            uncached_input_tokens: number;
+        };
+        /** CacheSwitchCostEstimateRequest */
+        CacheSwitchCostEstimateRequest: {
+            stay: components["schemas"]["CacheSwitchCostEstimateArmRequest"];
+            switch: components["schemas"]["CacheSwitchCostEstimateArmRequest"];
+        };
+        /** CacheSwitchCostEstimateResponse */
+        CacheSwitchCostEstimateResponse: {
+            stay: components["schemas"]["CacheSwitchCostEstimateArmResponse"];
+            switch: components["schemas"]["CacheSwitchCostEstimateArmResponse"];
+            /**
+             * Switch Cost Delta
+             * @description Switch input cost minus stay input cost in USD
+             */
+            switch_cost_delta: number;
+        };
         /** CacheTestRequest */
         CacheTestRequest: {
             /**
@@ -45111,6 +45248,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CostEstimateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    estimate_cache_switch_cost_cost_estimate_cache_switch_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CacheSwitchCostEstimateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CacheSwitchCostEstimateResponse"];
                 };
             };
             /** @description Validation Error */

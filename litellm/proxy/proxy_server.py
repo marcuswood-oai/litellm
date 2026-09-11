@@ -490,6 +490,9 @@ from litellm.proxy.management_endpoints.budget_management_endpoints import (
 from litellm.proxy.management_endpoints.cache_settings_endpoints import (
     router as cache_settings_router,
 )
+from litellm.proxy.management_endpoints.cache_switch_cost_estimate import (
+    router as cache_switch_cost_estimate_router,
+)
 from litellm.proxy.management_endpoints.callback_management_endpoints import (
     router as callback_management_endpoints_router,
 )
@@ -18728,6 +18731,7 @@ app.include_router(workflow_management_router)
 app.include_router(memory_router)
 app.include_router(plugin_router)
 app.include_router(cost_tracking_settings_router)
+app.include_router(cache_switch_cost_estimate_router)
 app.include_router(router_settings_router)
 app.include_router(fallback_management_router)
 app.include_router(cache_settings_router)
